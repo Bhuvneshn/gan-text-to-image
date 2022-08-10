@@ -21,17 +21,17 @@ class Trainer(object):
         self.generator1 = torch.nn.DataParallel(gan_factory.generator_factory(type).cuda())
         self.discriminator1 = torch.nn.DataParallel(gan_factory.discriminator_factory(type).cuda())
         self.generator2=torch.nn.DataParallel(generator_image_to_emb().cuda())
-        self.discriminator2 = torch.nn.DataParallel(discriminator_emb().cuda())
+        # self.discriminator2 = torch.nn.DataParallel(discriminator_emb().cuda())
         
        
         
 
         if pre_trained_disc:
             self.discriminator1.load_state_dict(torch.load(pre_trained_disc))
-            self.discriminator2.load_state_dict(torch.load(pre_trained_disc))
+            # self.discriminator2.load_state_dict(torch.load(pre_trained_disc))
         else:
             self.discriminator1.apply(Utils.weights_init)
-            self.discriminator2.apply(Utils.weights_init)
+            # self.discriminator2.apply(Utils.weights_init)
 
         if pre_trained_gen:
             self.generator1.load_state_dict(torch.load(pre_trained_gen))
@@ -62,7 +62,7 @@ class Trainer(object):
         self.data_loader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True,
                                 num_workers=self.num_workers)
 
-        self.optimD = torch.optim.Adam(list(self.discriminator1.parameters()) + list(self.discriminator2.parameters()), lr=self.lr, betas=(self.beta1, 0.999))
+        self.optimD = torch.optim.Adam(list(self.discriminator1.parameters())  , lr=self.lr, betas=(self.beta1, 0.999))
         self.optimG = torch.optim.Adam(list(self.generator1.parameters()) + list(self.generator2.parameters()), lr=self.lr, betas=(self.beta1, 0.999))
 
         self.logger = Logger(vis_screen)
@@ -315,9 +315,9 @@ class Trainer(object):
                 real_loss = criterion(outputs, smoothed_real_labels)
                 real_score = outputs
                 
-                self.discriminator2.zero_grad()
-                outputs, activation_real = self.discriminator2(right_images, right_embed)
-                real_loss += criterion(outputs, smoothed_real_labels)
+                # self.discriminator2.zero_grad()
+                # outputs, activation_real = self.discriminator2(right_embed)
+                # real_loss += criterion(outputs, smoothed_real_labels)
 
                 # if cls:
                 #     outputs, _ = self.discriminator1(wrong_embed, right_images)
@@ -338,11 +338,11 @@ class Trainer(object):
 
                 d_loss = real_loss + fake_loss
                 
-                outputs, _ = self.discriminator1(out_img, right_embed)
-                fake_loss = criterion(outputs, fake_labels)
-                fake_score = outputs
+                # outputs, _ = self.discriminator2(right_embed)
+                # fake_loss = criterion(outputs, fake_labels)
+                # fake_score = outputs
 
-                d_loss = real_loss + fake_loss
+                # d_loss = real_loss + fake_loss
                 
                 
                 # if cls:
@@ -360,18 +360,19 @@ class Trainer(object):
                 out_emb=self.generator2(right_images,noise)
                 reconstructed_image=self.generator1(out_emb,noise)
                 reconstructed_emb=self.generator2(out_img,noise)
-                outputs1, _ = self.discriminator1(out_img, right_embed)
-                outputs2, _ = self.discriminator1(out_emb, right_images)
+                outputs1, _ = self.discriminator1(out_img,right_embed)
+                outputs2, _ = self.discriminator1(right_images,out_emb)
                 cycle_loss=l1_loss(out_img,reconstructed_image)+l1_loss(out_emb,reconstructed_emb)
                 g_loss = criterion(outputs1,real_labels) + (cycle_loss*0.01) + criterion(outputs2,real_labels)
                 
+                # print(g_loss)
                 
                 
-                outputs, activation_fake = self.discriminator(fake_embed, right_images)
-                _, activation_real = self.discriminator(right_embed, right_images)
+                # outputs, activation_fake = self.discriminator(fake_embed, right_images)
+                # _, activation_real = self.discriminator(right_embed, right_images)
 
-                activation_fake = torch.mean(activation_fake, 0)
-                activation_real = torch.mean(activation_real, 0)
+                # activation_fake = torch.mean(activation_fake, 0)
+                # activation_real = torch.mean(activation_real, 0)
 
 
                 #======= Generator Loss function============

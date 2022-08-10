@@ -9,7 +9,7 @@ class gan_factory(object):
         elif type == 'wgan':
             return wgan_cls.generator()
         elif type == 'emb_gan':
-            return gan.generator()
+            return gan_cls.generator()
         elif type == 'vanilla_gan':
             return gan.generator()
         elif type == 'vanilla_wgan':
@@ -22,7 +22,7 @@ class gan_factory(object):
         elif type == 'wgan':
             return wgan_cls.discriminator()
         elif type == 'emb_gan':
-            return gan.discriminator()
+            return gan_cls.discriminator()
         elif type == 'vanilla_gan':
             return gan.discriminator()
         elif type == 'vanilla_wgan':

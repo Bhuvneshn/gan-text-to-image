@@ -5,7 +5,7 @@ import os
 import torch
 import h5py
 parser = argparse.ArgumentParser()
-parser.add_argument("--type", default='gan')
+parser.add_argument("--type", default='emb_gan')
 parser.add_argument("--lr", default=0.0002, type=float)
 parser.add_argument("--l1_coef", default=50, type=float)
 parser.add_argument("--l2_coef", default=100, type=float)
