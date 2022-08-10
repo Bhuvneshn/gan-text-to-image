@@ -224,8 +224,8 @@ class Trainer(object):
 
                 noise = Variable(torch.randn(right_images.size(0), 100)).cuda()
                 noise = noise.view(noise.size(0), 100, 1, 1)
-                out=self.generator1(right_images,noise)
-                print(out.shape)
+                out=self.generator1(right_embed,noise)
+                # print(out.shape)
             #     fake_images = self.generator(right_embed, noise)
             #     outputs, _ = self.discriminator(fake_images, right_embed)
             #     fake_loss = criterion(outputs, fake_labels)
@@ -307,11 +307,11 @@ class Trainer(object):
                 real_labels = Variable(real_labels).cuda()
                 smoothed_real_labels = Variable(smoothed_real_labels).cuda()
                 fake_labels = Variable(fake_labels).cuda()
-                print(type(right_embed))
-                print(type(right_images))
+                # print(type(right_embed))
+                # print(type(right_images))
                 # Train the discriminator
                 self.discriminator1.zero_grad()
-                outputs, activation_real = self.discriminator1(right_embed, right_images)
+                outputs, activation_real = self.discriminator1(right_images, right_embed)
                 real_loss = criterion(outputs, smoothed_real_labels)
                 real_score = outputs
                 
